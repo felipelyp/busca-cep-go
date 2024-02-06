@@ -23,7 +23,7 @@ func TestCep_Search(t *testing.T) {
 			b := NewBuscaCep()
 			result, err := b.Search(tt.cep)
 			if err != nil {
-				t.Log(b.Error)
+				t.Log(err)
 			} else {
 				t.Log(result)
 			}
@@ -33,14 +33,14 @@ func TestCep_Search(t *testing.T) {
 
 // Pesquisar e gerar erro durante a consulta
 func TestCep_SearchError(t *testing.T) {
-	b := BuscaCep{}
+	b := Cep{}
 	_, err := b.Search(cep)
 	t.Log(err)
 }
 
 // Pesquisar e gerar erro durante a consulta
 func TestCep_SearchResponseError(t *testing.T) {
-	b := BuscaCep{SoapCorreiosUrl: "https://github.com/felipelyp/"}
+	b := Cep{SoapCorreiosUrl: "https://github.com/felipelyp/"}
 	_, err := b.Search(cep)
 	if err == nil {
 		t.Fatal("Não era pra ser nulo")
