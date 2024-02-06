@@ -22,13 +22,22 @@ jobs:
         go-version: '1.20'
         cache: false
 
-    - name: Test
-      run: go test ./ -coverprofile=coverage.out
+    - name: Gocov
+      run: go get github.com/axw/gocov/gocov
 
+    - name: Gocov XML
+      run: go get github.com/AlekSi/gocov-xml
+    
+    - name: Go Test
+      run: go test ./ -coverprofile=cover.out
+
+    - name: Convert out to xml
+      run: gocov convert cover.out | gocov-xml > coverage.xml
+    
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage.out
+        filename: ./coverage.xml
         badge: true
         fail_below_min: true
         format: markdown
