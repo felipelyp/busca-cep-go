@@ -13,7 +13,13 @@ import (
 // BuscaCep Buscador de informações
 // por meio de CEP e receber dados
 // como Bairro, Cidade, Endereço, Complemento e UF
-type BuscaCep struct {
+type BuscaCep interface {
+	// Search pesquisar cep e obter Result
+	Search(cep string) (Result, error)
+}
+
+// Cep Buscador de cep via Soap
+type Cep struct {
 	//Erro para depuração
 	Error           error
 	SoapCorreiosUrl string
@@ -47,13 +53,15 @@ type CepResponse struct {
 }
 
 // Result Informações do cep consultado
+// Cuidado com dados inexistente como
+// Complemento ou até mesmo um Endereco
 type Result struct {
-	Bairro      string `xml:"bairro"`
+	UF          string `xml:"uf"`
 	Cep         string `xml:"cep"`
 	Cidade      string `xml:"cidade"`
+	Bairro      string `xml:"bairro"`
+	Endereco    string `xml:"end"`
 	Complemento string `xml:"complemento2"`
-	End         string `xml:"end"`
-	Uf          string `xml:"uf"`
 }
 
 type CepFault struct {
@@ -73,21 +81,21 @@ type Fault struct {
 
 // NewBuscaCep Nova instancia
 func NewBuscaCep() BuscaCep {
-	return BuscaCep{
+	return &Cep{
 		SoapCorreiosUrl: "https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente",
 	}
 }
 
 // Search pesquisar por meio do cep e receber um Result
-func (b *BuscaCep) Search(cep string) (Result, error) {
+func (c *Cep) Search(cep string) (Result, error) {
 	var result Result
 	if t := len(cep); t < 8 {
 		return result, errors.New(fmt.Sprintf("o cep deve contér 8 digitos, atual: %d digitos", t))
 	}
 	payload := bytes.NewBuffer(GetBody(cep))
-	res, err := http.Post(b.SoapCorreiosUrl, "application/xml", payload)
+	res, err := http.Post(c.SoapCorreiosUrl, "application/xml", payload)
 	if err != nil {
-		b.Error = err
+		c.Error = err
 		return result, errors.New("não foi possível consultar o cep, tente novamente")
 	}
 	out, _ := io.ReadAll(res.Body)
