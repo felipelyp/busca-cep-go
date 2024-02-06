@@ -23,7 +23,7 @@ jobs:
         cache: false
 
     - name: Test
-      run: go test ./... -coverprofile=coverage.out
+      run: go test ./... -coverprofile=coverage.xml
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
