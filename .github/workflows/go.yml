@@ -23,12 +23,12 @@ jobs:
         cache: false
 
     - name: Test
-      run: go test ./... -coverprofile=coverage.xml
+      run: go test ./ -coverprofile=coverage.out
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage/**/coverage.cobertura.xml
+        filename: coverage.out
         badge: true
         fail_below_min: true
         format: markdown
